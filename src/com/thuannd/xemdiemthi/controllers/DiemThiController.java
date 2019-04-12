@@ -15,6 +15,8 @@ import com.thuannd.xemdiemthi.dao.UserDAO;
 import com.thuannd.xemdiemthi.dao.impl.UserDAOImpl;
 import com.thuannd.xemdiemthi.entities.Diem;
 import com.thuannd.xemdiemthi.entities.SinhVien;
+import com.thuannd.xemdiemthi.entities.diemTKMonHoc;
+import java.util.ArrayList;
 
 @WebServlet(urlPatterns = { "/xem-diem-thi" })
 public class DiemThiController extends HttpServlet {
@@ -45,9 +47,31 @@ public class DiemThiController extends HttpServlet {
 		int id = Integer.parseInt(session.getAttribute("current_id").toString());
 		int kyHoc = Integer.parseInt(request.getParameter("ky_hoc").toString());
 		
-		List<Diem> diems = userDAO.getResultPoint(new SinhVien(id), kyHoc);
+		List<Diem> diems = userDAO.getResultPoint(id, kyHoc);
 		request.setAttribute("results", diems);
+                
+                float diemTBTichLuy = userDAO.diemTBTichLuy(id, kyHoc);
+                request.setAttribute("diemTBTichLuy", (double) Math.floor(diemTBTichLuy * 100) / 100 );
+                
+                
+                float diemTBTichLuyHe4 = userDAO.diemTBTichLuyHe4(id, kyHoc);
+                request.setAttribute("diemTBTichLuyHe4", (double) Math.floor(diemTBTichLuyHe4 * 100) / 100 );
 
+                float diemTBHocKy = userDAO.diemTBHocKy(id, kyHoc);
+                request.setAttribute("diemTBHocKy", (double) Math.floor(diemTBHocKy * 100) / 100 );
+                
+                float diemTBHocKyHe4 = userDAO.diemTBHocKyHe4(id, kyHoc);
+                request.setAttribute("diemTBHocKyHe4", (double) Math.floor(diemTBHocKyHe4 * 100) / 100);
+                
+                int soTinChiDatDuoc = userDAO.soTinChiDatDuoc(id, kyHoc);
+                request.setAttribute("soTinChiDatDuoc", soTinChiDatDuoc);
+                
+                int soTinChiTichLuy = userDAO.soTinChiTichLuy(id, kyHoc);
+                request.setAttribute("soTinChiTichLuy", soTinChiTichLuy);
+                
+                request.setAttribute("kyHoc", kyHoc);
+                
+                
 		RequestDispatcher dispatcher = request.getRequestDispatcher("diem-thi.jsp");
 		dispatcher.forward(request, response);
 	}

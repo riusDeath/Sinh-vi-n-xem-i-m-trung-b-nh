@@ -12,6 +12,7 @@ import com.thuannd.xemdiemthi.dao.SinhVienDAO;
 import com.thuannd.xemdiemthi.dao.UserDAO;
 import com.thuannd.xemdiemthi.entities.Diem;
 import com.thuannd.xemdiemthi.entities.SinhVien;
+import com.thuannd.xemdiemthi.entities.diemTKMonHoc;
 import com.thuannd.xemdiemthi.utils.DBConnection;
 import com.thuannd.xemdiemthi.utils.GioiTinh;
 
@@ -63,14 +64,22 @@ public class UserDAOImpl implements UserDAO {
 	}
 
 	@Override
-	public List<Diem> getResultPoint(SinhVien sinhVien, int kyHoc) {
+	public ArrayList<Diem> getResultPoint(int maSV, int kyHoc) {
 		connection = DBConnection.connect();
-		String sql = "SELECT * FROM diem WHERE id_sinh_vien = ? AND id_mon_hoc IN (SELECT id FROM mon_hoc WHERE ky_hoc = ?)";
-		List<Diem> diems = new ArrayList<Diem>();
+//		String sql = "SELECT *,  FROM diem WHERE id_sinh_vien = ? AND id_mon_hoc IN (SELECT id FROM mon_hoc WHERE ky_hoc = ?)";
+		String sql = "SELECT * ,  " +
+                        "(diem.chuyen_can * cau_hinh.chuyen_can "
+                        + "+ diem.bai_tap_lon * cau_hinh.bao_tap_lon "
+                        + "+ diem.cuoi_ky * cau_hinh.cuoi_ky "
+                        + "+ diem.thuc_hanh * cau_hinh.thuc_hanh)  as tkMon" +
+                        " FROM diem INNER JOIN cau_hinh ON diem.id_cau_hinh = cau_hinh.id " +
+                        "INNER JOIN mon_hoc ON diem.id_mon_hoc = mon_hoc.id " +
+                        "where diem.id_sinh_vien = " +maSV+ " " +
+                        "AND mon_hoc.ky_hoc = "+kyHoc+"";
+                System.out.println(sql);
+                ArrayList<Diem> diems = new ArrayList<Diem>();
 		try {
 			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-			preparedStatement.setInt(1, sinhVien.getId());
-			preparedStatement.setInt(2, kyHoc);
 			ResultSet rs = preparedStatement.executeQuery();
 			while (rs.next()) {
 				Diem diem = new Diem();
@@ -83,7 +92,7 @@ public class UserDAOImpl implements UserDAO {
 				diem.setTh(rs.getFloat("thuc_hanh"));
 				diem.setBtl(rs.getFloat("bai_tap_lon"));
 				diem.setCuoiKy(rs.getFloat("cuoi_ky"));
-
+                                diem.setDiemTK((double) Math.floor(rs.getFloat("tkMon") * 100) / 100);
 				diems.add(diem);
 			}
 		} catch (Exception exception) {
@@ -99,23 +108,23 @@ public class UserDAOImpl implements UserDAO {
 		String sql = "SELECT diem.* FROM diem INNER JOIN mon_hoc ON diem.id_mon_hoc = mon_hoc.id WHERE id_sinh_vien = ? ORDER BY mon_hoc.ky_hoc";
 		List<Diem> diems = new ArrayList<Diem>();
 		try {
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-			preparedStatement.setInt(1, sinhVien.getId());
-			ResultSet rs = preparedStatement.executeQuery();
-			while(rs.next()) {
-				Diem diem = new Diem();
-				diem.setId(rs.getInt("id"));
-				diem.setCauHinh(cauHinhDAO.getCauHinById(rs.getInt("id_cau_hinh")));
-				diem.setMonHoc(monHocDAO.getMonHocById(rs.getInt("id_mon_hoc")));
-				diem.setSinhVien(sinhVienDAO.getSinhVienById(rs.getInt("id_sinh_vien")));
-				diem.setCc(rs.getFloat("chuyen_can"));
-				diem.setKt(rs.getFloat("kiem_tra"));
-				diem.setTh(rs.getFloat("thuc_hanh"));
-				diem.setBtl(rs.getFloat("bai_tap_lon"));
-				diem.setCuoiKy(rs.getFloat("cuoi_ky"));
+                    PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                    preparedStatement.setInt(1, sinhVien.getId());
+                    ResultSet rs = preparedStatement.executeQuery();
+                    while(rs.next()) {
+                            Diem diem = new Diem();
+                            diem.setId(rs.getInt("id"));
+                            diem.setCauHinh(cauHinhDAO.getCauHinById(rs.getInt("id_cau_hinh")));
+                            diem.setMonHoc(monHocDAO.getMonHocById(rs.getInt("id_mon_hoc")));
+                            diem.setSinhVien(sinhVienDAO.getSinhVienById(rs.getInt("id_sinh_vien")));
+                            diem.setCc(rs.getFloat("chuyen_can"));
+                            diem.setKt(rs.getFloat("kiem_tra"));
+                            diem.setTh(rs.getFloat("thuc_hanh"));
+                            diem.setBtl(rs.getFloat("bai_tap_lon"));
+                            diem.setCuoiKy(rs.getFloat("cuoi_ky"));
 
-				diems.add(diem);
-			}
+                            diems.add(diem);
+                    }
 		}catch(Exception ex) {
 			ex.printStackTrace();
 		}
@@ -147,4 +156,197 @@ public class UserDAOImpl implements UserDAO {
 		this.monHocDAO = monHocDAO;
 	}
 
+    @Override
+    public ArrayList<diemTKMonHoc> getDiemTongKetMonHocTheoKy(int maSV, int kyHoc) {
+        connection = DBConnection.connect();
+        String sql = "SELECT mon_hoc.so_tin_chi, " +
+                        "(diem.chuyen_can * cau_hinh.chuyen_can "
+                        + "+ diem.bai_tap_lon * cau_hinh.bao_tap_lon "
+                        + "+ diem.cuoi_ky * cau_hinh.cuoi_ky "
+                        + "+ diem.thuc_hanh * cau_hinh.thuc_hanh)  as tb" +
+                        " FROM diem INNER JOIN cau_hinh ON diem.id_cau_hinh = cau_hinh.id " +
+                        "INNER JOIN mon_hoc ON diem.id_mon_hoc = mon_hoc.id " +
+                        "where diem.id_sinh_vien = " +maSV+ " " +
+                        "AND mon_hoc.ky_hoc = "+kyHoc+"";
+        ArrayList<diemTKMonHoc> diems = new ArrayList<>();
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()) {
+                diems.add(new diemTKMonHoc(rs.getInt("so_tin_chi"), rs.getFloat("tb")));
+            }
+        }catch(Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return diems;
+    }
+    
+    @Override
+    public float diemTBHocKy(int maSV, int hocKy) {
+        connection = DBConnection.connect();
+        float diemTBHocKy = 0;
+        int tongSoTinChi = 0;
+        ArrayList<diemTKMonHoc> diemTKMonHoc = this.getDiemTongKetMonHocTheoKy(maSV, hocKy);
+        float tongDiem = 0;
+        for (diemTKMonHoc diem :  diemTKMonHoc) {
+            System.out.println(diem.getDiemTK());
+            System.out.println(diem.getSoTinChi());
+            tongDiem += diem.getDiemTK() * diem.getSoTinChi();
+            tongSoTinChi += diem.getSoTinChi();
+        }
+
+        diemTBHocKy = tongDiem/tongSoTinChi;
+        return diemTBHocKy;
+    }
+    
+    public ArrayList<diemTKMonHoc> getDiemTongKetMonHoc(int maSV, int hocKy) {
+        ArrayList<diemTKMonHoc> diemTongKetMonHoc = new ArrayList();
+         connection = DBConnection.connect();
+		String sql = "SELECT mon_hoc.so_tin_chi, " +
+                                "(diem.chuyen_can * cau_hinh.chuyen_can "
+                                + "+ diem.bai_tap_lon * cau_hinh.bao_tap_lon "
+                                + "+ diem.cuoi_ky * cau_hinh.cuoi_ky "
+                                + "+ diem.thuc_hanh * cau_hinh.thuc_hanh)  as tb" +
+                                " FROM diem INNER JOIN cau_hinh ON diem.id_cau_hinh = cau_hinh.id " +
+                                "INNER JOIN mon_hoc ON diem.id_mon_hoc = mon_hoc.id " +
+                                "where diem.id_sinh_vien = " +maSV+ " "
+                                + "and mon_hoc.ky_hoc <="+hocKy ;
+                System.out.println(sql);
+		try {
+                    PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                    ResultSet rs = preparedStatement.executeQuery();
+                    while(rs.next()) {
+                        diemTongKetMonHoc.add(new diemTKMonHoc(rs.getInt("so_tin_chi"), rs.getFloat("tb")));
+                    }
+		}catch(Exception ex) {
+                    ex.printStackTrace();
+		}
+		
+        return diemTongKetMonHoc;
+    }
+    
+    @Override
+    public float diemTBTichLuy (int maSV, int hocKy) {
+        connection = DBConnection.connect();
+        float diemTBTichLuy = 0;
+        int tongSoTinChi = 0;
+        ArrayList<diemTKMonHoc> diemTKMonHoc = this.getDiemTongKetMonHoc(maSV, hocKy);
+        float tongDiem = 0;
+        for (diemTKMonHoc diem :  diemTKMonHoc) {
+            tongDiem += diem.getDiemTK() * diem.getSoTinChi();
+            tongSoTinChi += diem.getSoTinChi();
+        }
+        diemTBTichLuy = tongDiem/tongSoTinChi;
+        return diemTBTichLuy;
+    }
+    
+    
+    
+    @Override
+    public int soTinChiDatDuoc(int maSV, int hocKy ) {
+        connection = DBConnection.connect();
+        int tongSoTinChi = 0;
+        ArrayList<diemTKMonHoc> diemTKMonHoc = this.getDiemTongKetMonHocTheoKy(maSV, hocKy);
+        for (diemTKMonHoc diem :  diemTKMonHoc) {
+            if (diem.getDiemTK() >= 4) {
+                tongSoTinChi += diem.getSoTinChi();
+            }
+        }
+        return tongSoTinChi;
+    }
+
+    @Override
+    public int soTinChiTichLuy(int id_sinh_vien, int hocKy) {
+        connection = DBConnection.connect();
+        int soTinChiDaDat = 0;
+        ArrayList<diemTKMonHoc> diemTKMonHoc = this.getDiemTongKetMonHoc(id_sinh_vien, hocKy);
+        for (diemTKMonHoc tKMonHoc : diemTKMonHoc) {
+            if(tKMonHoc.getDiemTK() >= 4) 
+                soTinChiDaDat += tKMonHoc.getSoTinChi();
+        }
+        return soTinChiDaDat;
+    }
+    
+    @Override
+    public  float diemTBHocKyHe4(int maSV, int hocKy){
+        connection = DBConnection.connect();
+        float diemTBTichLuyHe4 = 0;
+        int tongSoTinChi = 0;
+        ArrayList<diemTKMonHoc> diemTKMonHoc = this.getDiemTongKetMonHocTheoKy(maSV, hocKy);
+        float tongDiemHe4 = 0;
+        for (diemTKMonHoc diem :  diemTKMonHoc) {
+            tongDiemHe4 += diemHe4(diem.getDiemTK())*diem.getSoTinChi();
+            tongSoTinChi += diem.getSoTinChi();
+        }
+        diemTBTichLuyHe4 = tongDiemHe4/tongSoTinChi;
+        return diemTBTichLuyHe4;
+    }
+    
+    @Override
+    public  float diemTBTichLuyHe4(int maSV, int hocKy) {
+        connection = DBConnection.connect();
+        float diemTichLuyHe4 = 0;
+        int tongSoTinChi = 0;
+        ArrayList<diemTKMonHoc> diemTKMonHoc = this.getDiemTongKetMonHoc(maSV, hocKy);
+        float tongDiem = 0;
+        for (diemTKMonHoc diem :  diemTKMonHoc) {
+            tongDiem += diemHe4(diem.getDiemTK())* diem.getSoTinChi();
+            tongSoTinChi += diem.getSoTinChi();
+        }
+        diemTichLuyHe4 = tongDiem/tongSoTinChi;
+        return diemTichLuyHe4;
+    }
+    
+    public float diemHe4(float diemTK) {
+        float diemHe4 = 0;
+        if(diemTK < 4 ) 
+            return 0;
+        if(diemTK < 5)
+            return 1;
+        if(diemTK < 5.5)
+            return (float) 1.5;
+        if(diemTK < 6.5)
+            return 2;
+        if(diemTK < 7)
+            return (float) 2.5;
+        if(diemTK < 8)
+            return 3;
+        if(diemTK < 8.5)
+            return (float) 3.5;
+        if(diemTK < 9)
+            return (float) 3.7;
+        if(diemTK <= 10)
+            return 4;
+        return diemHe4;
+    }
+    
+   
+    
+    public static void main(String[] args) {
+        UserDAOImpl user = new UserDAOImpl();
+//        ArrayList<diemTKMonHoc> diemTrungBinhMonHoc = user.getDiemTongKetMonHoc(1, 8);
+//            
+//        for (diemTKMonHoc diem :  diemTrungBinhMonHoc) {
+//            System.out.println(diem.getDiemTK());
+//            System.out.println(diem.getSoTinChi());
+//            System.out.println(diem.toString());
+//        }
+//           float diemTBHocKy = user.diemTBHocKy(1,8);
+//           System.out.println((double) Math.floor(diemTBHocKy * 100) / 100);
+//           float diemTBTichLuy = user.diemTBTichLuy(1);
+//           System.out.println((double) Math.floor(diemTBTichLuy * 100) / 100);
+//           int soTinChiDaDat = user.soTinChiTichLuy(1);
+//           System.out.println(soTinChiDaDat);
+//           int soTinChiDatDuoc = user.soTinChiDatDuoc(1, 8);
+//           System.out.println(soTinChiDatDuoc);
+//           int diemTBHocKyHe4 = user.soTinChiTichLuy(1,7);
+//           System.out.println(diemTBHocKyHe4);
+            float diemTBHocKyHe4 = user.diemTBHocKyHe4(1, 8);
+            System.out.println(diemTBHocKyHe4);
+//            List<Diem> diems = user.getResultPoint(1, 8);
+//            for (Diem diem : diems) {
+//                System.out.println(diem.diemHe4Chu());
+//            }
+    }
 }
