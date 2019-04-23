@@ -11,6 +11,7 @@ import com.thuannd.xemdiemthi.dao.MonHocDAO;
 import com.thuannd.xemdiemthi.dao.SinhVienDAO;
 import com.thuannd.xemdiemthi.dao.UserDAO;
 import com.thuannd.xemdiemthi.entities.Diem;
+import com.thuannd.xemdiemthi.entities.KyHocWrapper;
 import com.thuannd.xemdiemthi.entities.SinhVien;
 import com.thuannd.xemdiemthi.entities.diemTKMonHoc;
 import com.thuannd.xemdiemthi.utils.DBConnection;
@@ -28,11 +29,11 @@ public class UserDAOImpl implements UserDAO {
 		this.setCauHinhDAO(new CauHinhDAOImpl());
 		this.setSinhVienDAO(new SinhVienDAOImpl());
 		this.setMonHocDAO(new MonHocDAOImpl());
+		connection = DBConnection.connect();
 	}
 
 	@Override
 	public SinhVien login(String maSinhVien, String password) {
-		connection = DBConnection.connect();
 		try {
 			String sql = "SELECT * FROM sinhvien WHERE ma_sinh_vien = ? AND password = ?";
 			PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -65,7 +66,6 @@ public class UserDAOImpl implements UserDAO {
 
 	@Override
 	public ArrayList<Diem> getResultPoint(int maSV, int kyHoc) {
-		connection = DBConnection.connect();
 //		String sql = "SELECT *,  FROM diem WHERE id_sinh_vien = ? AND id_mon_hoc IN (SELECT id FROM mon_hoc WHERE ky_hoc = ?)";
 		String sql = "SELECT * ,  " +
                         "(diem.chuyen_can * cau_hinh.chuyen_can "
@@ -102,34 +102,25 @@ public class UserDAOImpl implements UserDAO {
 		return diems;
 	}
 
+	// xem tat ca hoc ky
 	@Override
-	public List<Diem> getSemesters(SinhVien sinhVien) {
-		connection = DBConnection.connect();
-		String sql = "SELECT diem.* FROM diem INNER JOIN mon_hoc ON diem.id_mon_hoc = mon_hoc.id WHERE id_sinh_vien = ? ORDER BY mon_hoc.ky_hoc";
-		List<Diem> diems = new ArrayList<Diem>();
-		try {
-                    PreparedStatement preparedStatement = connection.prepareStatement(sql);
-                    preparedStatement.setInt(1, sinhVien.getId());
-                    ResultSet rs = preparedStatement.executeQuery();
-                    while(rs.next()) {
-                            Diem diem = new Diem();
-                            diem.setId(rs.getInt("id"));
-                            diem.setCauHinh(cauHinhDAO.getCauHinById(rs.getInt("id_cau_hinh")));
-                            diem.setMonHoc(monHocDAO.getMonHocById(rs.getInt("id_mon_hoc")));
-                            diem.setSinhVien(sinhVienDAO.getSinhVienById(rs.getInt("id_sinh_vien")));
-                            diem.setCc(rs.getFloat("chuyen_can"));
-                            diem.setKt(rs.getFloat("kiem_tra"));
-                            diem.setTh(rs.getFloat("thuc_hanh"));
-                            diem.setBtl(rs.getFloat("bai_tap_lon"));
-                            diem.setCuoiKy(rs.getFloat("cuoi_ky"));
-
-                            diems.add(diem);
-                    }
-		}catch(Exception ex) {
-			ex.printStackTrace();
+	public List<KyHocWrapper> getAllSemester(SinhVien sinhVien){
+		List<KyHocWrapper> kyHocWrappers = new ArrayList<KyHocWrapper>();
+		for(int i = 1; i <=8; i++) {
+			KyHocWrapper kyHocWrapper = new KyHocWrapper();
+			kyHocWrapper.setKyHoc(i);
+			List<Diem> diems = this.getResultPoint(sinhVien.getId(), i);
+			kyHocWrapper.setDiems(diems);
+			kyHocWrapper.setDiemTBHocKy(Math.floor((this.diemTBHocKy(sinhVien.getId(), i)) * 100) / 100);
+			kyHocWrapper.setDiemTBHocKyHe4(Math.floor((this.diemTBHocKyHe4(sinhVien.getId(), i)) * 100) / 100);
+			kyHocWrapper.setDiemTBTichLuy(Math.floor((this.diemTBTichLuy(sinhVien.getId(), i)) * 100) / 100);
+			kyHocWrapper.setDiemTBTichLuyHe4(Math.floor((this.diemTBTichLuyHe4(sinhVien.getId(), i)) * 100) / 100);
+			kyHocWrapper.setSoTinChiDatDuoc(this.soTinChiDatDuoc(sinhVien.getId(), i));
+			kyHocWrapper.setSoTinChiTichLuy(this.soTinChiTichLuy(sinhVien.getId(), i));
+			
+			kyHocWrappers.add(kyHocWrapper);
 		}
-		
-		return diems;
+		return kyHocWrappers;
 	}
 
 	public CauHinhDAO getCauHinhDAO() {
@@ -158,7 +149,6 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public ArrayList<diemTKMonHoc> getDiemTongKetMonHocTheoKy(int maSV, int kyHoc) {
-        connection = DBConnection.connect();
         String sql = "SELECT mon_hoc.so_tin_chi, " +
                         "(diem.chuyen_can * cau_hinh.chuyen_can "
                         + "+ diem.bai_tap_lon * cau_hinh.bao_tap_lon "
@@ -184,7 +174,6 @@ public class UserDAOImpl implements UserDAO {
     
     @Override
     public float diemTBHocKy(int maSV, int hocKy) {
-        connection = DBConnection.connect();
         float diemTBHocKy = 0;
         int tongSoTinChi = 0;
         ArrayList<diemTKMonHoc> diemTKMonHoc = this.getDiemTongKetMonHocTheoKy(maSV, hocKy);
@@ -201,8 +190,7 @@ public class UserDAOImpl implements UserDAO {
     }
     
     public ArrayList<diemTKMonHoc> getDiemTongKetMonHoc(int maSV, int hocKy) {
-        ArrayList<diemTKMonHoc> diemTongKetMonHoc = new ArrayList();
-         connection = DBConnection.connect();
+        ArrayList<diemTKMonHoc> diemTongKetMonHoc = new ArrayList<diemTKMonHoc>();
 		String sql = "SELECT mon_hoc.so_tin_chi, " +
                                 "(diem.chuyen_can * cau_hinh.chuyen_can "
                                 + "+ diem.bai_tap_lon * cau_hinh.bao_tap_lon "
@@ -228,7 +216,6 @@ public class UserDAOImpl implements UserDAO {
     
     @Override
     public float diemTBTichLuy (int maSV, int hocKy) {
-        connection = DBConnection.connect();
         float diemTBTichLuy = 0;
         int tongSoTinChi = 0;
         ArrayList<diemTKMonHoc> diemTKMonHoc = this.getDiemTongKetMonHoc(maSV, hocKy);
@@ -245,7 +232,6 @@ public class UserDAOImpl implements UserDAO {
     
     @Override
     public int soTinChiDatDuoc(int maSV, int hocKy ) {
-        connection = DBConnection.connect();
         int tongSoTinChi = 0;
         ArrayList<diemTKMonHoc> diemTKMonHoc = this.getDiemTongKetMonHocTheoKy(maSV, hocKy);
         for (diemTKMonHoc diem :  diemTKMonHoc) {
@@ -258,7 +244,6 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public int soTinChiTichLuy(int id_sinh_vien, int hocKy) {
-        connection = DBConnection.connect();
         int soTinChiDaDat = 0;
         ArrayList<diemTKMonHoc> diemTKMonHoc = this.getDiemTongKetMonHoc(id_sinh_vien, hocKy);
         for (diemTKMonHoc tKMonHoc : diemTKMonHoc) {
@@ -270,7 +255,6 @@ public class UserDAOImpl implements UserDAO {
     
     @Override
     public  float diemTBHocKyHe4(int maSV, int hocKy){
-        connection = DBConnection.connect();
         float diemTBTichLuyHe4 = 0;
         int tongSoTinChi = 0;
         ArrayList<diemTKMonHoc> diemTKMonHoc = this.getDiemTongKetMonHocTheoKy(maSV, hocKy);
@@ -285,7 +269,6 @@ public class UserDAOImpl implements UserDAO {
     
     @Override
     public  float diemTBTichLuyHe4(int maSV, int hocKy) {
-        connection = DBConnection.connect();
         float diemTichLuyHe4 = 0;
         int tongSoTinChi = 0;
         ArrayList<diemTKMonHoc> diemTKMonHoc = this.getDiemTongKetMonHoc(maSV, hocKy);
