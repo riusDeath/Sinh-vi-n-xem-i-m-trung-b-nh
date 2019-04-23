@@ -140,17 +140,18 @@
 								</div> <span id="" class="Label"></span>
 								<div id="">
 									<center>
-										<a id="" style="color: Red; font-weight: bold;" href="<%=request.getContextPath()%>/tat-ca-hoc-ky">Xem tất cả
-											học kì </a> <br> <span id="" class="Label">Chọn kỳ
-											học:</span> &nbsp;&nbsp; <select name="ky_hoc">
-                                                                                        <option value="1" >Kỳ 1</option>
-											<option value="2"  >Kỳ 2</option>
-											<option value="3"  >Kỳ 3</option>
-											<option value="4"  >Kỳ 4</option>
-											<option value="5"  >Kỳ 5</option>
-											<option value="6"  >Kỳ 6</option>
-											<option value="7"  >Kỳ 7</option>
-											<option value="8" >Kỳ 8</option>
+										<a id="" style="color: Red; font-weight: bold;"
+											href="<%=request.getContextPath()%>/tat-ca-hoc-ky">Xem
+											tất cả học kì </a> <br> <span id="" class="Label">Chọn
+											kỳ học:</span> &nbsp;&nbsp; <select name="ky_hoc">
+											<option value="1">Kỳ 1</option>
+											<option value="2">Kỳ 2</option>
+											<option value="3">Kỳ 3</option>
+											<option value="4">Kỳ 4</option>
+											<option value="5">Kỳ 5</option>
+											<option value="6">Kỳ 6</option>
+											<option value="7">Kỳ 7</option>
+											<option value="8">Kỳ 8</option>
 										</select> <input type="submit" name="" value="Xem" id=""
 											class="DefaultButton">
 									</center>
@@ -231,7 +232,9 @@
 																	<td title=" điểm tổng kết (điểm chữ)" align="center"><span
 																		class="Label">TK(CH)</span></td>
 																</tr>
-                                                                                                                                
+																<tr class="title-hk-diem" style="height: 20px;">
+																	<td align="left" colspan="17"><span class="Label">Kỳ ${ky_hoc}</span></td>
+																</tr>
 																<c:forEach items="${results}" var="diem">
 																	<tr class="row-diem" style="height: 20px;">
 																		<td align="left" style="width: 16px;"><span
@@ -279,10 +282,10 @@
 																		<td align="center"><span class="Label">
 																				&nbsp; </span></td>
 																		<td title="7.9" align="center"><span
-                                                                                                                                                        class="Label">${diem.getDiemTK()}</span></td>
+																			class="Label">${diem.getDiemTK()}</span></td>
 																		<td title="B" align="center"><span class="Label">${diem.diemHe4Chu()}<span></td>
 																	</tr>
-                                                                                                                                
+
 																</c:forEach>
 																<tr class="row-diemTK">
 																	<td align="left" colspan="17"><span class="Label"
