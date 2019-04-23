@@ -230,89 +230,96 @@
 																	<td title=" điểm tổng kết (điểm chữ)" align="center"><span
 																		class="Label">TK(CH)</span></td>
 																</tr>
-																<c:forEach items="${results}" var="diem">
+																<c:forEach items="${tatCaHocKy}" var="wrapper">
 																	<div>
-																	<tr class="row-diem" style="height: 20px;">
-																		<td align="left" style="width: 16px;"><span
-																			class="Label"
-																			style="display: inline-block; width: 16px;">${diem.id}</span></td>
-																		<td align="center" style="width: 60px;"><span
-																			class="Label"
-																			style="display: inline-block; width: 60px;">INT1405</span></td>
-																		<td align="left" style="width: 250px;"><span
-																			class="Label"
-																			style="display: inline-block; width: 250px;">${diem.getMonHoc().getTenMonHoc()}</span></td>
-																		<td align="center" style="width: 20px;"><span
-																			class="Label"
-																			style="display: inline-block; width: 20px;">${diem.getMonHoc().getSoTinChi()}</span></td>
-																		<td align="center" style="width: 20px;"><span
-																			class="Label"
-																			style="display: inline-block; width: 20px;">${diem.getCauHinh().getChuyenCan()}
-																		</span></td>
-																		<td align="center" style="width: 20px;"><span
-																			class="Label"
-																			style="display: inline-block; width: 20px;">${diem.getCauHinh().getKiemTra()}</span></td>
-																		<td align="center" style="width: 20px;"><span
-																			class="Label"
-																			style="display: inline-block; width: 20px;">${diem.getCauHinh().getThucHanh()}</span></td>
-																		<td align="center" style="width: 20px;"><span
-																			class="Label"
-																			style="display: inline-block; width: 20px;">${diem.getCauHinh().getBaiTapLon()}</span></td>
-																		<td align="center" style="width: 20px;"><span
-																			class="Label"
-																			style="display: inline-block; width: 20px;">${diem.getCauHinh().getcuoiKy()}</span></td>
-																		<td align="center" style="width: 20px;"><span
-																			class="Label"
-																			style="display: inline-block; width: 20px;">${diem.getCc()}</span></td>
-																		<td align="center" style="width: 20px;"><span
-																			class="Label"
-																			style="display: inline-block; width: 20px;">${diem.getKt()}</span></td>
-																		<td align="center" style="width: 20px;"><span
-																			class="Label"
-																			style="display: inline-block; width: 20px;">${diem.getTh()}</span></td>
-																		<td align="center" style="width: 20px;"><span
-																			class="Label"
-																			style="display: inline-block; width: 20px;">${diem.getBtl()}</span></td>
-																		<td title="8.0" align="center"><span
-																			class="Label">${diem.getCuoiKy()}</span></td>
-																		<td align="center"><span class="Label">
-																				&nbsp; </span></td>
-																		<td title="7.9" align="center"><span
-																			class="Label">7.9</span></td>
-																		<td title="B" align="center"><span class="Label">B</span></td>
-																	</tr>
+																		<tr class="title-hk-diem" style="height: 20px;">
+																			<td align="left" colspan="17"><span
+																				class="Label">${wrapper.kyHoc}</span></td>
+																		</tr>
+																		<c:forEach items="${wrapper.diems}" var="diem">
+																			<tr class="row-diem" style="height: 20px;">
+																				<td align="left" style="width: 16px;"><span
+																					class="Label"
+																					style="display: inline-block; width: 16px;">${diem.id}</span></td>
+																				<td align="center" style="width: 60px;"><span
+																					class="Label"
+																					style="display: inline-block; width: 60px;">INT1405</span></td>
+																				<td align="left" style="width: 250px;"><span
+																					class="Label"
+																					style="display: inline-block; width: 250px;">${diem.getMonHoc().getTenMonHoc()}</span></td>
+																				<td align="center" style="width: 20px;"><span
+																					class="Label"
+																					style="display: inline-block; width: 20px;">${diem.getMonHoc().getSoTinChi()}</span></td>
+																				<td align="center" style="width: 20px;"><span
+																					class="Label"
+																					style="display: inline-block; width: 20px;">${diem.getCauHinh().getChuyenCan()}
+																				</span></td>
+																				<td align="center" style="width: 20px;"><span
+																					class="Label"
+																					style="display: inline-block; width: 20px;">${diem.getCauHinh().getKiemTra()}</span></td>
+																				<td align="center" style="width: 20px;"><span
+																					class="Label"
+																					style="display: inline-block; width: 20px;">${diem.getCauHinh().getThucHanh()}</span></td>
+																				<td align="center" style="width: 20px;"><span
+																					class="Label"
+																					style="display: inline-block; width: 20px;">${diem.getCauHinh().getBaiTapLon()}</span></td>
+																				<td align="center" style="width: 20px;"><span
+																					class="Label"
+																					style="display: inline-block; width: 20px;">${diem.getCauHinh().getcuoiKy()}</span></td>
+																				<td align="center" style="width: 20px;"><span
+																					class="Label"
+																					style="display: inline-block; width: 20px;">${diem.getCc()}</span></td>
+																				<td align="center" style="width: 20px;"><span
+																					class="Label"
+																					style="display: inline-block; width: 20px;">${diem.getKt()}</span></td>
+																				<td align="center" style="width: 20px;"><span
+																					class="Label"
+																					style="display: inline-block; width: 20px;">${diem.getTh()}</span></td>
+																				<td align="center" style="width: 20px;"><span
+																					class="Label"
+																					style="display: inline-block; width: 20px;">${diem.getBtl()}</span></td>
+																				<td title="8.0" align="center"><span
+																					class="Label">${diem.getCuoiKy()}</span></td>
+																				<td align="center"><span class="Label">
+																						&nbsp; </span></td>
+																				<td title="7.9" align="center"><span
+																					class="Label">${diem.getDiemTK()}</span></td>
+																				<td title="B" align="center"><span
+																					class="Label">${diem.diemHe4Chu()}</span></td>
+																			</tr>
+																		</c:forEach>
 																	</div>
+																	<tr class="row-diemTK">
+																		<td align="left" colspan="17"><span class="Label"
+																			style="display: inline-block; width: 300px;">Điểm
+																				trung bình học kỳ hệ 10/100:</span><span class="Label">${wrapper.diemTBHocKy}</span></td>
+																	</tr>
+																	<tr class="row-diemTK">
+																		<td align="left" colspan="17"><span class="Label"
+																			style="display: inline-block; width: 300px;">Điểm
+																				trung bình học kỳ hệ 4:</span><span class="Label">${wrapper.diemTBHocKyHe4}</span></td>
+																	</tr>
+																	<tr class="row-diemTK">
+																		<td align="left" colspan="17"><span class="Label"
+																			style="display: inline-block; width: 300px;">Điểm
+																				trung bình tích lũy:</span><span class="Label">${wrapper.diemTBTichLuy}</span></td>
+																	</tr>
+																	<tr class="row-diemTK">
+																		<td align="left" colspan="17"><span class="Label"
+																			style="display: inline-block; width: 300px;">Điểm
+																				trung bình tích lũy (hệ 4):</span><span class="Label">${wrapper.diemTBTichLuyHe4}</span></td>
+																	</tr>
+																	<tr class="row-diemTK">
+																		<td align="left" colspan="17"><span class="Label"
+																			style="display: inline-block; width: 300px;">Số
+																				tín chỉ đạt:</span><span class="Label">${wrapper.soTinChiDatDuoc}</span></td>
+																	</tr>
+																	<tr class="row-diemTK">
+																		<td align="left" colspan="17"><span class="Label"
+																			style="display: inline-block; width: 300px;">Số
+																				tín chỉ tích lũy:</span><span class="Label">${wrapper.soTinChiTichLuy}</span></td>
+																	</tr>
 																</c:forEach>
-																<tr class="row-diemTK">
-																	<td align="left" colspan="17"><span class="Label"
-																		style="display: inline-block; width: 300px;">Điểm
-																			trung bình học kỳ hệ 10/100:</span><span class="Label">6.85</span></td>
-																</tr>
-																<tr class="row-diemTK">
-																	<td align="left" colspan="17"><span class="Label"
-																		style="display: inline-block; width: 300px;">Điểm
-																			trung bình học kỳ hệ 4:</span><span class="Label">2.59</span></td>
-																</tr>
-																<tr class="row-diemTK">
-																	<td align="left" colspan="17"><span class="Label"
-																		style="display: inline-block; width: 300px;">Điểm
-																			trung bình tích lũy:</span><span class="Label">6.75</span></td>
-																</tr>
-																<tr class="row-diemTK">
-																	<td align="left" colspan="17"><span class="Label"
-																		style="display: inline-block; width: 300px;">Điểm
-																			trung bình tích lũy (hệ 4):</span><span class="Label">2.53</span></td>
-																</tr>
-																<tr class="row-diemTK">
-																	<td align="left" colspan="17"><span class="Label"
-																		style="display: inline-block; width: 300px;">Số
-																			tín chỉ đạt:</span><span class="Label">16</span></td>
-																</tr>
-																<tr class="row-diemTK">
-																	<td align="left" colspan="17"><span class="Label"
-																		style="display: inline-block; width: 300px;">Số
-																			tín chỉ tích lũy:</span><span class="Label">114</span></td>
-																</tr>
 															</tbody>
 														</table>
 													</div>

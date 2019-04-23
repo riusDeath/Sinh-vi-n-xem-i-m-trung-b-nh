@@ -49,6 +49,7 @@ public class DiemThiController extends HttpServlet {
 		
 		List<Diem> diems = userDAO.getResultPoint(id, kyHoc);
 		request.setAttribute("results", diems);
+		request.setAttribute("ky_hoc", kyHoc);
                 
                 float diemTBTichLuy = userDAO.diemTBTichLuy(id, kyHoc);
                 request.setAttribute("diemTBTichLuy", (double) Math.floor(diemTBTichLuy * 100) / 100 );

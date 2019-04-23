@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import com.thuannd.xemdiemthi.dao.UserDAO;
 import com.thuannd.xemdiemthi.dao.impl.UserDAOImpl;
 import com.thuannd.xemdiemthi.entities.Diem;
+import com.thuannd.xemdiemthi.entities.KyHocWrapper;
 import com.thuannd.xemdiemthi.entities.SinhVien;
 
 @WebServlet(urlPatterns = { "/tat-ca-hoc-ky" })
@@ -29,16 +30,22 @@ public class XemTatCaHocKy extends HttpServlet {
 	}
 
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		HttpSession session = req.getSession();
+	protected void doGet(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		
 		int id = Integer.parseInt(session.getAttribute("current_id").toString());
-		List<Diem> diems = userDAO.getSemesters(new SinhVien(id));
-		diems.forEach(diem -> {
-			System.out.println("chuyen can + ky hoc: " + diem.getCc() + " ---- " + diem.getMonHoc().getKyHoc());
+		List<KyHocWrapper> kyHocWrappers= userDAO.getAllSemester(new SinhVien(id));
+		System.out.println("\n ----XEM TAT CA HOC KY----: ");
+		kyHocWrappers.forEach(wrapper ->{
+			System.out.println("ky hoc: " + wrapper.getKyHoc());
+			wrapper.getDiems().forEach(d ->{
+				System.out.println( "diem cuoi ky he chu: " + d.getDiemTK());
+			});
 		});
-		req.setAttribute("tatCaHocKy", diems);
-		RequestDispatcher requestDispatcher = req.getRequestDispatcher("diem-thi.jsp");
-		requestDispatcher.forward(req, resp);
+		request.setAttribute("tatCaHocKy", kyHocWrappers);
+		
+		RequestDispatcher requestDispatcher = request.getRequestDispatcher("tat-ca-hoc-ky.jsp");
+		requestDispatcher.forward(request, resp);
 	}
 
 	@Override

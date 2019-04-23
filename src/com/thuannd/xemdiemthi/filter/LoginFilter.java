@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebFilter(urlPatterns = {"/xem-diem-thi"})
+@WebFilter(urlPatterns = {"/xem-diem-thi", "/tat-ca-hoc-ky"})
 public class LoginFilter implements Filter{
 
 	@Override
