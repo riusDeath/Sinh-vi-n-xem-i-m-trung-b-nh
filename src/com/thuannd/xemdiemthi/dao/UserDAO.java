@@ -3,6 +3,7 @@ package com.thuannd.xemdiemthi.dao;
 import java.util.List;
 
 import com.thuannd.xemdiemthi.entities.Diem;
+import com.thuannd.xemdiemthi.entities.KyHocWrapper;
 import com.thuannd.xemdiemthi.entities.SinhVien;
 import com.thuannd.xemdiemthi.entities.diemTKMonHoc;
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ public interface UserDAO {
 	
 	List<Diem> getResultPoint(int maSV, int kyHoc);
 	
-	List<Diem> getSemesters(SinhVien sinhVien);
+	List<KyHocWrapper> getAllSemester(SinhVien sinhVien);
         
         ArrayList<diemTKMonHoc> getDiemTongKetMonHocTheoKy(int maSV, int kyHoc);
         
