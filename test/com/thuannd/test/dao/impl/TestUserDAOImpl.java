@@ -112,7 +112,7 @@ public class TestUserDAOImpl {
 		float actual7 = userDAOImpl.diemHe4(8.4f);
 		assertEquals(3.5, actual7);
 		float actual8 = userDAOImpl.diemHe4(8.9f);
-		assertEquals(3.7, actual8);
+		assertEquals(3.7f, actual8);
 		float actual9 = userDAOImpl.diemHe4(9.9f);
 		assertEquals(4, actual9);
 	}
