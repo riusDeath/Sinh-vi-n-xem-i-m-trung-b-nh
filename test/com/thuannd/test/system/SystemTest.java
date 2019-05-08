@@ -16,7 +16,7 @@ import com.thuannd.test.utils.TestDBConnection;
 public class SystemTest {
 
 	/*
-	 * 16 testcase - set/get
+	 * 24 testcase - set/get
 	 * */
 	
 	@Test
