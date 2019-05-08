@@ -1,5 +1,6 @@
 package com.thuannd.test.dao.impl;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Connection;
@@ -21,13 +22,18 @@ public class TestMonHocDAOImpl {
 	@BeforeClass
 	public static void init() {
 		connection = DBConnection.connect();
+		assertNotNull(connection);
 		monHocDAO = new MonHocDAOImpl();
 	}
 	
 	@Test
 	public void testGetMonHocById() {
 		MonHoc monHoc = monHocDAO.getMonHocById(1);
+		assertNotNull(monHoc);
 		assertEquals("SQA", monHoc.getTenMonHoc());
+		assertEquals("CNPM", monHoc.getNganhHoc());
+		assertEquals(8, monHoc.getKyHoc());
+		assertEquals(3, monHoc.getSoTinChi());
 	}
 	
 }
